@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// One analyzed trending repository for a given week.
+/// JSON-shaped fields are stored as serialized strings so the schema stays
+/// portable between SQLite and Postgres.
+model Repo {
+  id          String @id @default(cuid())
+  fullName    String
+  owner       String
+  name        String
+  url         String
+  weekOf      String
+
+  description String?
+  language    String?
+  stars       Int     @default(0)
+  starsGained Int     @default(0)
+  forks       Int     @default(0)
+
+  summary       String
+  whyItMatters  String
+  technologies  String
+  tags          String
+
+  learnTopics    String
+  difficulty     String
+  learningPath   String
+
+  cloneTitle       String
+  cloneDescription String
+  cloneFeatures    String
+  cloneStack       String
+  cloneDifficulty  String
+  cloneTimeEstimate String
+
+  rank      Int      @default(0)
+  createdAt DateTime @default(now())
+
+  issues  Issue[]      @relation("FeaturedRepo")
+  locales RepoLocale[]
+
+  @@unique([fullName, weekOf])
+  @@index([weekOf])
+}
+
+/// A non-English edition of a repo's generated content, written directly from
+/// the source material rather than translated. English lives on Repo itself
+/// and doubles as the fallback when an edition is missing.
+model RepoLocale {
+  id     String @id @default(cuid())
+  repoId String
+  locale String
+  repo   Repo   @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  summary      String
+  whyItMatters String
+  learnTopics  String
+  learningPath String
+
+  cloneTitle        String
+  cloneDescription  String
+  cloneFeatures     String
+  cloneTimeEstimate String
+
+  createdAt DateTime @default(now())
+
+  @@unique([repoId, locale])
+}
+
+/// A generated weekly newsletter issue.
+model Issue {
+  id       String  @id @default(cuid())
+  slug     String  @unique
+  weekOf   String  @unique
+  title    String
+  subtitle String
+  markdown String
+  html     String
+
+  featuredRepoId String?
+  featuredRepo   Repo?   @relation("FeaturedRepo", fields: [featuredRepoId], references: [id])
+
+  sentAt       DateTime?
+  recipientCount Int     @default(0)
+  createdAt    DateTime  @default(now())
+}
+
+model Subscriber {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  createdAt      DateTime  @default(now())
+  unsubscribedAt DateTime?
+}

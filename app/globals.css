@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-ink-950 text-mist-100 antialiased;
+  }
+
+  ::selection {
+    @apply bg-accent-soft text-mist-100;
+  }
+}
+
+@layer components {
+  /* Newsletter body rendered from our own Markdown. */
+  .prose-issue {
+    @apply text-[1.0625rem] leading-[1.75] text-mist-200;
+  }
+  .prose-issue h2 {
+    @apply mb-3 mt-10 text-xl font-semibold text-mist-100;
+  }
+  .prose-issue h3 {
+    @apply mb-2 mt-8 text-lg font-semibold text-mist-100;
+  }
+  .prose-issue p {
+    @apply mb-5;
+  }
+  .prose-issue ul,
+  .prose-issue ol {
+    @apply mb-5 space-y-2 pl-5;
+  }
+  .prose-issue ul {
+    @apply list-disc;
+  }
+  .prose-issue ol {
+    @apply list-decimal;
+  }
+  .prose-issue a {
+    @apply text-accent underline decoration-accent/40 underline-offset-2 hover:decoration-accent;
+  }
+  .prose-issue code {
+    @apply rounded bg-ink-800 px-1.5 py-0.5 font-mono text-[0.875em] text-mist-100;
+  }
+  .prose-issue blockquote {
+    @apply mb-5 border-l-2 border-ink-600 pl-4 italic text-mist-300;
+  }
+  .prose-issue strong {
+    @apply font-semibold text-mist-100;
+  }
+}
