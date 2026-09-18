@@ -406,7 +406,7 @@ function missingPaths(value: unknown, paths: string[]): string[] {
  *   - carrying the JSON schema on a forced tool call's `input_schema`, since
  *     DeepSeek ignores `output_config.format` (json_schema).
  * If the model returns a tool input that is missing a required field, retry
- * once with a corrective nudge before giving up.
+ * up to twice (three attempts total) with a corrective nudge before giving up.
  */
 async function callForcedTool<T>(args: {
   tool: Anthropic.Tool;
@@ -419,7 +419,7 @@ async function callForcedTool<T>(args: {
   const { tool, label, requiredPaths, system, userContent, maxTokens } = args;
   let content = userContent;
 
-  for (let attempt = 1; attempt <= 2; attempt += 1) {
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
     const message = await getClient()
       .messages.create({
         model: MODEL,
@@ -441,10 +441,10 @@ async function callForcedTool<T>(args: {
     const missing = missingPaths(result, requiredPaths);
     if (missing.length === 0) return result;
 
-    if (attempt === 2) {
-      throw new Error(`${label} still incomplete after retry — missing: ${missing.join(', ')}`);
+    if (attempt === 3) {
+      throw new Error(`${label} still incomplete after 3 attempts — missing: ${missing.join(', ')}`);
     }
-    content = `${userContent}\n\nYour previous tool input was missing these required fields: ${missing.join(', ')}. Call ${tool.name} again and fill in every one of them.`;
+    content = `${userContent}\n\nYour previous call to ${tool.name} was rejected because it omitted required fields: ${missing.join(', ')}. Call it again and output ALL fields — none may be left out.`;
   }
 
   throw new Error(`${label}: unreachable`);
