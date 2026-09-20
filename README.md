@@ -21,7 +21,7 @@
 | 数据来源 | 抓取 `github.com/trending` 网页 | **GitHub Search API**（`api.github.com`） |
 | 结构化输出 | Anthropic 的 `json_schema` | 强制 tool call + `input_schema` 携带 schema |
 | 思考模式 | 默认开启 | 关闭（DeepSeek 思考模式不允许强制 tool call） |
-| 输出稳定性 | 无校验 | 校验必填字段，缺失时自动重试一次 |
+| 输出稳定性 | 无校验 | 校验必填字段，缺失时自动重试（最多 3 次尝试） |
 | 邮件发送 | Resend（国外服务） | QQ 邮箱 SMTP（nodemailer），国内直连 |
 
 ## 它做什么
@@ -34,7 +34,7 @@ GitHub Search API → REST API 补全信息 → DeepSeek 分析 → SQLite 存�
 
 - **首页**：展示本周热门项目的卡片，每张卡片包含「为什么重要 / 能学到什么 / 周末复刻」三块内容，并配有中文版
 - **周报**：把本周项目串成一篇可读的文章，点出一个「周末动手做」的项目
-- **订阅**：访客可提交邮箱订阅（目前发送为 dry-run，见下文）
+- **订阅**：访客可提交邮箱订阅，周报通过 QQ 邮箱真实发送
 
 > 数据来源说明：GitHub 没有官方的 Trending API，本版本用 Search API 查询「过去 7 天新建、按 star 排序」的仓库，得到"本周爆火的新项目"。
 
@@ -46,7 +46,7 @@ GitHub Search API → REST API 补全信息 → DeepSeek 分析 → SQLite 存�
 | AI | DeepSeek，通过 `@anthropic-ai/sdk`（Anthropic 兼容端点） |
 | 存储 | SQLite + Prisma |
 | 邮件 | QQ 邮箱 SMTP（nodemailer，未配置时 dry-run） |
-| 自动化 | GitHub Actions 定时任务 + 可手动运行的 CLI |
+| 自动化 | macOS launchd 本地定时任务（每周一发）+ 可手动运行的 CLI |
 
 ## 快速开始
 
@@ -102,6 +102,17 @@ npm run backfill:zh              # 补齐缺失的中文版
 npm run seed:demo                # 插入一批手写的演示数据
 ```
 
+## 本地定时发送（macOS launchd）
+
+只在自己电脑上每周自动收周报（不部署公网）的做法：用 macOS 自带的 launchd，每周一 08:00 自动跑一次 `npm run pipeline:send`。
+
+- 触发配置：`~/Library/LaunchAgents/com.saria.weekly-learn.plist`
+- 包装脚本：`~/.config/weekly-learn/run-weekly.sh`（先 `source .env` 加载密钥，再跑管道）
+- 运行日志：`~/Library/Logs/weekly-learn.log`
+- 立即手动触发一次：`launchctl kickstart gui/$(id -u)/com.saria.weekly-learn`
+
+> 电脑当时在睡眠的话，唤醒后会自动补跑。
+
 ## 目录结构
 
 ```
@@ -111,7 +122,7 @@ lib/
   ai.ts                 DeepSeek 分析 + 周报生成（含结构化输出适配）
   github.ts             趋势仓库抓取（Search API）+ 元信息补全
   markdown.ts           轻量 Markdown → HTML
-  email.ts              Resend 发送 + 邮件模板
+  email.ts              QQ 邮箱 SMTP 发送（nodemailer）+ 邮件模板
   db.ts、week.ts        Prisma 客户端、周次工具
 prisma/schema.prisma    Repo / Issue / Subscriber
 scripts/run-pipeline.ts 周报编排脚本
