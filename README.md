@@ -139,4 +139,4 @@ scripts/run-pipeline.ts 周报编排脚本
 
 ## 作者
 
-Saria · 3305737205@qq.com
+Saria
