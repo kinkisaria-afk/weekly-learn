@@ -1,6 +1,6 @@
 # 第三方代码声明
 
-本项目 **Weekly Learn** 是 [LearnFromGithub](https://github.com/viviannnl/learn-from-github)（作者 **viviannnl**）的**二次开发**版本，仅用于个人学习。
+本项目 **Weekly Learn** 是 [LearnFromGithub](https://github.com/viviannnl/learn-from-github)（作者 **Vivian Li** / viviannnl）的**二次开发**版本，仅用于个人学习。
 
 - 保留了原项目的整体架构与页面结构；
 - 针对国内使用场景，重写了三块：AI 层（Claude → DeepSeek）、数据源（爬网页 → GitHub Search API）、邮件层（Resend → QQ 邮箱 SMTP）。

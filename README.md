@@ -2,7 +2,7 @@
 
 把 GitHub 上的热门开源项目，变成「为什么值得关注 + 能学到什么 + 周末能动手做什么」的学习材料，并每周生成一期邮件周报。
 
-> 本项目是 [LearnFromGithub](https://github.com/viviannnl/learn-from-github) 的二次开发版本，针对国内使用场景做了适配。
+> 本项目是 [LearnFromGithub](https://github.com/viviannnl/learn-from-github)（作者 Vivian Li）的二次开发版本，针对国内使用场景做了适配。
 
 ## 为什么要做这个改动
 
