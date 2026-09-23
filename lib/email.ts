@@ -11,7 +11,7 @@ const SMTP_SECURE = (process.env.SMTP_SECURE ?? 'true') !== 'false';
 const SMTP_USER = process.env.SMTP_USER;
 const SMTP_PASS = process.env.SMTP_PASS;
 // QQ 邮箱要求发件地址与登录账号一致，所以 FROM 默认直接用 SMTP_USER。
-const FROM = process.env.NEWSLETTER_FROM ?? SMTP_USER ?? 'LearnFromGithub <newsletter@example.com>';
+const FROM = process.env.NEWSLETTER_FROM ?? SMTP_USER ?? 'Weekly Learn <newsletter@example.com>';
 
 const SITE_PORT = Number(process.env.PORT ?? 3000);
 
@@ -73,7 +73,7 @@ export function buildEmailHtml(issue: {
 <body style="margin:0;padding:0;background:#f4f6f8;">
   <div style="max-width:640px;margin:0 auto;padding:40px 24px;background:#ffffff;font:16px/1.7 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif;color:#1f2937;">
     <p style="margin:0 0 32px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#8a94a6;">
-      LearnFromGithub &middot; ${formatWeek(issue.weekOf)}
+      Weekly Learn &middot; ${formatWeek(issue.weekOf)}
     </p>
     <h1 style="margin:0 0 8px;font-size:28px;line-height:1.25;color:#111827;">${issue.title}</h1>
     <p style="margin:0 0 36px;font-size:17px;color:#6b7280;">${issue.subtitle}</p>
@@ -85,7 +85,7 @@ export function buildEmailHtml(issue: {
       </a>
     </p>
     <p style="margin:20px 0 0;font-size:12px;color:#9ca3af;">
-      You are receiving this because you subscribed to LearnFromGithub.
+      You are receiving this because you subscribed to Weekly Learn.
     </p>
   </div>
 </body>

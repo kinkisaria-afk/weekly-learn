@@ -11,7 +11,7 @@ export type TrendingRepo = {
   readme: string | null;
 };
 
-const UA = 'learn-from-github/0.1 (+https://github.com/viviannnl/learn-from-github)';
+const UA = 'weekly-learn/0.1 (+https://github.com/kinkisaria-afk/weekly-learn)';
 
 function ghHeaders(accept = 'application/vnd.github+json'): HeadersInit {
   const headers: Record<string, string> = {

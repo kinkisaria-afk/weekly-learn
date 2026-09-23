@@ -11,8 +11,8 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const issue = await prisma.issue.findUnique({ where: { slug } });
-  if (!issue) return { title: 'Issue not found — LearnFromGithub' };
-  return { title: `${issue.title} — LearnFromGithub`, description: issue.subtitle };
+  if (!issue) return { title: 'Issue not found — Weekly Learn' };
+  return { title: `${issue.title} — Weekly Learn`, description: issue.subtitle };
 }
 
 export default async function IssuePage({ params }: Props) {

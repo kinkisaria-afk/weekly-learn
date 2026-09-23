@@ -46,7 +46,7 @@ async function main() {
   const opts = parseArgs(process.argv.slice(2));
   const week = weekOf();
 
-  console.log(`\nLearnFromGithub pipeline — week of ${week}\n`);
+  console.log(`\nWeekly Learn pipeline — week of ${week}\n`);
 
   // Fail before spending time on GitHub requests we could not act on.
   await assertCredentials();

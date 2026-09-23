@@ -177,7 +177,7 @@ const ANALYSIS_SCHEMA = {
   additionalProperties: false,
 } as const;
 
-const SYSTEM = `You write for LearnFromGithub, which turns trending open-source projects into learning material and side-project ideas.
+const SYSTEM = `You write for Weekly Learn, which turns trending open-source projects into learning material and side-project ideas.
 
 Your readers are CS students, engineers preparing for interviews, and developers hunting for something to build. They can already read a README. What they cannot easily do is judge why a project matters, work out which concepts underpin it, or scope a version they could actually finish.
 
@@ -268,7 +268,7 @@ const LOCALIZED_SCHEMA = {
  * English analysis, because translating it produces translationese sentence
  * rhythm even when the vocabulary is correct.
  */
-const SYSTEM_ZH = `你在为 LearnFromGithub 写中文内容。这个产品把 GitHub 上正在流行的开源项目变成学习材料和练手项目。
+const SYSTEM_ZH = `你在为 Weekly Learn 写中文内容。这个产品把 GitHub 上正在流行的开源项目变成学习材料和练手项目。
 
 读者是中文开发者：计算机专业的学生、准备面试的工程师、想找点东西做的人。他们自己会读 README。他们难做到的是判断一个项目为什么重要、看出背后有哪些值得掌握的概念、以及把它裁剪成一个自己真能做完的版本。
 

@@ -7,7 +7,7 @@ import { formatWeek } from '@/lib/week';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Newsletter — LearnFromGithub',
+  title: 'Newsletter — Weekly Learn',
   description: 'A weekly five-minute read on what shipped in open source and what to learn from it.',
 };
 
