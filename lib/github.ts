@@ -1,3 +1,5 @@
+import { ProxyAgent } from 'undici';
+
 export type TrendingRepo = {
   fullName: string;
   owner: string;
@@ -22,6 +24,37 @@ function ghHeaders(accept = 'application/vnd.github+json'): HeadersInit {
   const token = process.env.GITHUB_TOKEN;
   if (token) headers.Authorization = `Bearer ${token}`;
   return headers;
+}
+
+// —— 可选代理支持 ——
+// 国内网络直连 GitHub 不稳定。通过 HTTPS_PROXY 环境变量可让所有 GitHub API
+// 请求走 HTTP 代理（Node 原生 fetch 不读取系统/环境代理，需要显式注入）。
+// 不设置该变量时走直连，行为与原来完全一致。这里惰性读取是必要的：process.env
+// 要等 Prisma 加载 .env 之后才有值，而模块求值顺序不定，所以放到首次请求时才读。
+let _proxyAgent: ProxyAgent | undefined;
+let _proxyResolved = false;
+
+function proxyAgent(): ProxyAgent | undefined {
+  if (!_proxyResolved) {
+    _proxyResolved = true;
+    const proxy = process.env.HTTPS_PROXY;
+    if (proxy) {
+      try {
+        _proxyAgent = new ProxyAgent(proxy);
+      } catch {
+        // 代理地址非法时回退直连，避免拖垮整条 pipeline。
+        _proxyAgent = undefined;
+      }
+    }
+  }
+  return _proxyAgent;
+}
+
+/** 统一的 fetch 封装：配置了 HTTPS_PROXY 时自动注入代理 dispatcher。 */
+function ghFetch(input: string | URL, init: RequestInit = {}): Promise<Response> {
+  const dispatcher = proxyAgent();
+  if (!dispatcher) return fetch(input, init);
+  return fetch(input, { ...init, dispatcher } as RequestInit & { dispatcher: ProxyAgent });
 }
 
 type TrendingEntry = Pick<
@@ -59,7 +92,7 @@ export async function fetchTrending(limit = 25): Promise<TrendingEntry[]> {
   url.searchParams.set('order', 'desc');
   url.searchParams.set('per_page', String(limit));
 
-  const res = await fetch(url.toString(), { headers: ghHeaders() });
+  const res = await ghFetch(url, { headers: ghHeaders() });
   if (!res.ok) {
     if (res.status === 403 || res.status === 429) {
       throw new Error(
@@ -87,7 +120,7 @@ export async function enrich(
   repo: Pick<TrendingRepo, 'fullName' | 'owner' | 'name' | 'url' | 'description' | 'starsGained'>,
 ): Promise<TrendingRepo> {
   const [meta, readme] = await Promise.all([
-    fetch(`https://api.github.com/repos/${repo.fullName}`, { headers: ghHeaders() }).then((r) =>
+    ghFetch(`https://api.github.com/repos/${repo.fullName}`, { headers: ghHeaders() }).then((r) =>
       r.ok ? r.json() : null,
     ),
     fetchReadme(repo.fullName),
@@ -104,7 +137,7 @@ export async function enrich(
 }
 
 async function fetchReadme(fullName: string): Promise<string | null> {
-  const res = await fetch(`https://api.github.com/repos/${fullName}/readme`, {
+  const res = await ghFetch(`https://api.github.com/repos/${fullName}/readme`, {
     headers: ghHeaders('application/vnd.github.raw'),
   });
   if (!res.ok) return null;
